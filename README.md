@@ -1,4 +1,7 @@
-# DAILY SYSTEM v0.3
+# DAILY SYSTEM v0.3.1
+
+TypeScript/Vercel build fix for size-map indexing.
+
 
 Changes in this build:
 - fixed color controls with visible HSL gradient tracks;

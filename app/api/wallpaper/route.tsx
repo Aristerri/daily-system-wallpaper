@@ -49,20 +49,20 @@ export async function GET(request:Request){
   const yearEnabled=bool(searchParams.get("year"),true);
   const yearMode=searchParams.get("yearMode")==="days"?"days":"percent";
   const yearStyle=["ticks","ring","months"].includes(searchParams.get("yearStyle")??"")?searchParams.get("yearStyle")!:"ticks";
-  const yearSize=["s","m","l"].includes(searchParams.get("yearSize")??"")?searchParams.get("yearSize")!:"l";
+  const yearSize = (["s","m","l"].includes(searchParams.get("yearSize") ?? "") ? searchParams.get("yearSize")! : "l") as "s" | "m" | "l";
   const yearY=num(searchParams.get("yearY"),49,20,82);
 
   const birthday=searchParams.get("birthday")??"off";
-  const birthdaySize=["s","m","l"].includes(searchParams.get("birthdaySize")??"")?searchParams.get("birthdaySize")!:"m";
+  const birthdaySize = (["s","m","l"].includes(searchParams.get("birthdaySize") ?? "") ? searchParams.get("birthdaySize")! : "m") as "s" | "m" | "l";
   const birthdayY=num(searchParams.get("birthdayY"),69,20,82);
 
   const objectRaw=searchParams.get("object")??"flowers";
   const objectMode=(["flowers","animals","geometry"].includes(objectRaw)?objectRaw:null) as SpriteCategory|null;
-  const objectSize=["s","m","l"].includes(searchParams.get("objectSize")??"")?searchParams.get("objectSize")!:"l";
+  const objectSize = (["s","m","l"].includes(searchParams.get("objectSize") ?? "") ? searchParams.get("objectSize")! : "l") as "s" | "m" | "l";
   const objectY=num(searchParams.get("objectY"),60,20,82);
 
   const motivationEnabled=bool(searchParams.get("motivation"),true);
-  const wordSize=["s","m","l"].includes(searchParams.get("wordSize")??"")?searchParams.get("wordSize")!:"l";
+  const wordSize = (["s","m","l"].includes(searchParams.get("wordSize") ?? "") ? searchParams.get("wordSize")! : "l") as "s" | "m" | "l";
   const wordY=num(searchParams.get("wordY"),77,20,82);
 
   const details=bool(searchParams.get("details"),true);
@@ -84,10 +84,23 @@ export async function GET(request:Request){
   const textAlign=align as any;
   const yClamp=(y:number)=>Math.max(topSafe+5,Math.min(100-bottomSafe-5,y));
 
-  const yearFont={s:Math.round(44*scale),m:Math.round(60*scale),l:Math.round(82*scale)}[yearSize]!;
-  const birthdayFont={s:Math.round(36*scale),m:Math.round(52*scale),l:Math.round(72*scale)}[birthdaySize]!;
-  const wordFont={s:Math.round(40*scale),m:Math.round(58*scale),l:Math.round(78*scale)}[wordSize]!;
-  const pxMap={s:Math.max(5,Math.round(6*scale)),m:Math.max(7,Math.round(9*scale)),l:Math.max(10,Math.round(12*scale))};
+  const yearFontMap: Record<"s" | "m" | "l", number> = {
+    s: Math.round(44 * scale), m: Math.round(60 * scale), l: Math.round(82 * scale)
+  };
+  const birthdayFontMap: Record<"s" | "m" | "l", number> = {
+    s: Math.round(36 * scale), m: Math.round(52 * scale), l: Math.round(72 * scale)
+  };
+  const wordFontMap: Record<"s" | "m" | "l", number> = {
+    s: Math.round(40 * scale), m: Math.round(58 * scale), l: Math.round(78 * scale)
+  };
+  const yearFont = yearFontMap[yearSize];
+  const birthdayFont = birthdayFontMap[birthdaySize];
+  const wordFont = wordFontMap[wordSize];
+  const pxMap: Record<"s" | "m" | "l", number> = {
+    s: Math.max(5, Math.round(6 * scale)),
+    m: Math.max(7, Math.round(9 * scale)),
+    l: Math.max(10, Math.round(12 * scale))
+  };
 
   const absBase=(y:number)=>({
     display:"flex",position:"absolute" as const,left:padX,right:padX,top:`${yClamp(y)}%`,
