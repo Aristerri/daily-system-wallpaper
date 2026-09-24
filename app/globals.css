@@ -146,3 +146,46 @@ footer { min-height: 58px; display: flex; justify-content: space-between; gap: 2
   .guideCard { border-right: 0 !important; }
   footer { flex-direction: column; align-items: flex-start; }
 }
+
+
+/* v3 controls */
+.wideStack { width: min(860px, 100%); }
+.subControl { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.1); }
+.subControl > span { color: var(--muted); font-size: 9px; letter-spacing: .1em; }
+.genericRange input[type="range"] { accent-color: #fff; }
+.colorRange {
+  -webkit-appearance: none; appearance: none; height: 10px; border-radius: 99px; outline: none; border: 1px solid rgba(255,255,255,.2);
+}
+.colorRange::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; border: 2px solid #000; box-shadow: 0 0 0 1px rgba(255,255,255,.65);
+}
+.colorRange::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid #000;
+}
+.iosDate {
+  position: absolute; top: 8.2%; left: 0; right: 0; text-align: center;
+  color: #fff; mix-blend-mode: difference; font-family: -apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif;
+  font-size: 10px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase;
+}
+.iosClock {
+  top: 10.1% !important;
+  font-family: -apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif !important;
+  font-size: 47px !important; font-weight: 600 !important; letter-spacing: -0.06em !important;
+}
+.lockButtons {
+  position: absolute; left: 8%; right: 8%; bottom: 5.4%; display: flex; justify-content: space-between;
+}
+.lockButtons i {
+  width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,.55); color:#fff;
+  display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 14px;
+  backdrop-filter: blur(8px);
+}
+.homeIndicator {
+  position: absolute; bottom: 1.3%; left: 50%; transform: translateX(-50%);
+  width: 34%; height: 4px; background: #fff; border-radius: 99px; opacity: .95;
+}
+
+@media (max-width: 760px) {
+  .subControl { align-items: flex-start; flex-direction: column; }
+}
