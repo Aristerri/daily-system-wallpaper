@@ -195,8 +195,11 @@ export default function Home(){
   const [objectMode,setObjectMode]=useState<ObjectMode>("flowers");
   const [objectSize,setObjectSize]=useState<ObjectSize>("m");
   const [motivation,setMotivation]=useState(true);
-  const [wordSize,setWordSize]=useState<ObjectSize>("m");
+  const [dayEnabled,setDayEnabled]=useState(true);
   const [details,setDetails]=useState(true);
+  const [frameStyle,setFrameStyle]=useState<FrameStyle>("corners");
+  const [signature,setSignature]=useState<Signature>("logo");
+  const [wordSize,setWordSize]=useState<ObjectSize>("m");
   const [slots,setSlots]=useState<Record<ModuleKey,Slot>>({object:"tl",birthday:"tr",word:"bl",day:"br"});
   const [previewSeed,setPreviewSeed]=useState<number|null>(null);
   const [copied,setCopied]=useState(false);
