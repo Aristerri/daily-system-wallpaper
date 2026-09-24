@@ -1,4 +1,7 @@
-# DAILY SYSTEM v0.5.3
+# DAILY SYSTEM v0.5.4
+
+Build fix: closed the conditional JSX expression around the OBJECT drag handle. No wallpaper behavior or design logic was changed.
+
 
 Build fix for malformed JSX around the OBJECT drag handle in the phone preview. No wallpaper logic was changed.
 
