@@ -42,6 +42,8 @@ const COPY = {
     on: "ON",
     off: "OFF",
     value: "VALUE",
+    yearBar: "STATUS BAR",
+    yearDots: "365 DAY DOTS",
     size: "SIZE",
     percent: "%",
     daysMode: "267 / 365",
@@ -79,7 +81,7 @@ const COPY = {
       ["10","DONE","Every day the same URL returns a new daily object/word while keeping your chosen design."]
     ],
     note: "Apple can change Shortcuts labels between iOS versions. If a label is slightly different, use the equivalent URL / Get Contents / Set Wallpaper actions.",
-    footer: "V.05 · URL-BASED SETTINGS · NO ACCOUNT · NO DATABASE"
+    footer: "V.06 · URL-BASED SETTINGS · NO ACCOUNT · NO DATABASE"
   },
   ru: {
     navTitle: "ГЕНЕРАТОР ДИНАМИЧЕСКИХ ОБОЕВ",
@@ -108,6 +110,8 @@ const COPY = {
     on: "ВКЛ",
     off: "ВЫКЛ",
     value: "ЗНАЧЕНИЕ",
+    yearBar: "СТАТУС-БАР",
+    yearDots: "365 ТОЧЕК",
     size: "РАЗМЕР",
     percent: "%",
     daysMode: "267 / 365",
@@ -145,7 +149,7 @@ const COPY = {
       ["10","ГОТОВО","Одна и та же ссылка ежедневно отдаёт новую картинку, сохраняя выбранный дизайн и настройки."]
     ],
     note: "Названия действий могут немного отличаться в разных версиях iOS. Нужна связка URL → Получить содержимое URL → Установить обои.",
-    footer: "V.04 · НАСТРОЙКИ В URL · БЕЗ АККАУНТА · БЕЗ БАЗЫ"
+    footer: "V.06 · НАСТРОЙКИ В URL · БЕЗ АККАУНТА · БЕЗ БАЗЫ"
   }
 } as const;
 
@@ -190,6 +194,8 @@ export default function Home(){
   const [lang,setLang]=useState<Lang>("ru");
   const [yearProgress,setYearProgress]=useState(true);
   const [progressMode,setProgressMode]=useState<ProgressMode>("days");
+  const [yearBar,setYearBar]=useState(true);
+  const [yearDots,setYearDots]=useState(true);
   const [birthdayEnabled,setBirthdayEnabled]=useState(true);
   const [birthday,setBirthday]=useState("1990-10-24");
   const [objectMode,setObjectMode]=useState<ObjectMode>("flowers");
@@ -200,7 +206,9 @@ export default function Home(){
   const [frameStyle,setFrameStyle]=useState<FrameStyle>("corners");
   const [signature,setSignature]=useState<Signature>("logo");
   const [wordSize,setWordSize]=useState<ObjectSize>("m");
-  const [slots,setSlots]=useState<Record<ModuleKey,Slot>>({object:"tl",birthday:"tr",word:"bl",day:"br"});
+  const initialSlots:Record<ModuleKey,Slot>={object:"tl",birthday:"tr",word:"bl",day:"br"};
+  const [slots,setSlots]=useState<Record<ModuleKey,Slot>>(initialSlots);
+  const [draftSlots,setDraftSlots]=useState<Record<ModuleKey,Slot>>(initialSlots);
   const [previewSeed,setPreviewSeed]=useState<number|null>(null);
   const [copied,setCopied]=useState(false);
   const [timeZone,setTimeZone]=useState("UTC");
@@ -216,7 +224,7 @@ export default function Home(){
   const query=useMemo(()=>{
     return new URLSearchParams({
       device,bg:cleanHex(background,"000000"),fg:cleanHex(primary,"FFFFFF"),lang,
-      year:yearProgress?"1":"0",yearMode:progressMode,
+      year:yearProgress?"1":"0",yearMode:progressMode,yearBar:yearBar?"1":"0",yearDots:yearDots?"1":"0",
       birthday:birthdayEnabled?birthdayMD:"off",
       object:objectMode,objectSize,
       motivation:motivation?"1":"0",wordSize,
@@ -225,16 +233,17 @@ export default function Home(){
       objectSlot:slots.object,birthdaySlot:slots.birthday,wordSlot:slots.word,daySlot:slots.day,
       tz:timeZone
     });
-  },[device,background,primary,lang,yearProgress,progressMode,birthdayEnabled,birthdayMD,objectMode,objectSize,motivation,wordSize,dayEnabled,details,frameStyle,signature,slots,timeZone]);
+  },[device,background,primary,lang,yearProgress,progressMode,yearBar,yearDots,birthdayEnabled,birthdayMD,objectMode,objectSize,motivation,wordSize,dayEnabled,details,frameStyle,signature,slots,timeZone]);
 
   const permanentPath=`/api/wallpaper?${query.toString()}`;
   const previewPath=`${permanentPath}${previewSeed===null?"":`&seed=${previewSeed}`}`;
 
   const copyUrl=async()=>{await navigator.clipboard.writeText(`${window.location.origin}${permanentPath}`);setCopied(true);window.setTimeout(()=>setCopied(false),1400)};
 
-  const moveModule=(key:ModuleKey,target:Slot)=>{
-    const occupied=(Object.entries(slots) as [ModuleKey,Slot][]).find(([k,v])=>k!==key&&v===target);
-    setSlots(prev=>{
+  const moveDraftModule=(key:ModuleKey,target:Slot)=>{
+    setDraftSlots(prev=>{
+      if(prev[key]===target)return prev;
+      const occupied=(Object.entries(prev) as [ModuleKey,Slot][]).find(([k,v])=>k!==key&&v===target);
       const next={...prev};
       if(occupied){next[occupied[0]]=prev[key]}
       next[key]=target;
@@ -247,7 +256,23 @@ export default function Home(){
     const r=phoneRef.current.getBoundingClientRect();
     const x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
     const target:Slot=(y<.50?(x<.5?"tl":"tr"):(x<.5?"bl":"br"));
-    moveModule(dragging,target);
+    moveDraftModule(dragging,target);
+  };
+
+  const commitDrag=()=>{
+    if(dragging){setSlots(draftSlots)}
+    setDragging(null);
+  };
+
+  const cancelDrag=()=>{
+    setDraftSlots(slots);
+    setDragging(null);
+  };
+
+  const beginDrag=(key:ModuleKey,e:React.PointerEvent<HTMLButtonElement>)=>{
+    setDraftSlots(slots);
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(key);
   };
 
   const randomizeAll=()=>{
@@ -256,6 +281,8 @@ export default function Home(){
     setPrimary(contrastColor(bg));
 
     setYearProgress(Math.random() > 0.22);
+    setYearBar(Math.random() > 0.18);
+    setYearDots(Math.random() > 0.35);
     setBirthdayEnabled(Math.random() > 0.35);
     setMotivation(Math.random() > 0.28);
     setDayEnabled(Math.random() > 0.38);
@@ -275,7 +302,9 @@ export default function Home(){
     setSignature((["logo","text","both","off"] as Signature[])[Math.floor(Math.random()*4)]);
 
     const s=shuffle(SLOTS);
-    setSlots({object:s[0],birthday:s[1],word:s[2],day:s[3]});
+    const nextSlots={object:s[0],birthday:s[1],word:s[2],day:s[3]};
+    setSlots(nextSlots);
+    setDraftSlots(nextSlots);
     setPreviewSeed(Math.floor(Math.random()*1000000));
   };
 
@@ -284,7 +313,7 @@ export default function Home(){
       <div>DAILY SYSTEM®</div>
       <div className="topbarCenter">{t.navTitle}</div>
       <div className="headerRight">
-        <span className="versionTag">V.05</span>
+        <span className="versionTag">V.06</span>
         <div className="headerActions"><button className={siteLang==="ru"?"langActive":""} onClick={()=>setSiteLang("ru")}>RU</button><span>/</span><button className={siteLang==="en"?"langActive":""} onClick={()=>setSiteLang("en")}>EN</button></div>
       </div>
     </header>
@@ -296,7 +325,7 @@ export default function Home(){
         <div className="dragHint">{t.dragHint}</div>
         <div className="phoneStage">
           <div ref={phoneRef} className={`phone phone-${shellType}`} style={{aspectRatio:`${selectedDevice.width} / ${selectedDevice.height}`}}
-            onPointerMove={pointerMove} onPointerUp={()=>setDragging(null)} onPointerCancel={()=>setDragging(null)}>
+            onPointerMove={pointerMove} onPointerUp={commitDrag} onPointerCancel={cancelDrag}>
             <img src={previewPath} alt="Wallpaper preview"/>
             {shellType==="island"&&<div className="dynamicIsland"/>}
             {shellType==="notch"&&<div className="notch"/>}
@@ -309,10 +338,10 @@ export default function Home(){
               </div>
               <div className="homeIndicator"/>
             </>}
-            {objectMode!=="off"&&<DragHandle name="OBJECT" slot={slots.object} active={dragging==="object"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("object")}}/>}
-            {birthdayEnabled&&<DragHandle name="BIRTHDAY" slot={slots.birthday} active={dragging==="birthday"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("birthday")}}/>}
-            {motivation&&<DragHandle name="WORD" slot={slots.word} active={dragging==="word"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("word")}}/>}
-            {dayEnabled&&<DragHandle name="DAY" slot={slots.day} active={dragging==="day"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("day")}}/>}
+            {objectMode!=="off"&&<DragHandle name="OBJECT" slot={draftSlots.object} active={dragging==="object"} onDown={e=>beginDrag("object",e)}/>}
+            {birthdayEnabled&&<DragHandle name="BIRTHDAY" slot={draftSlots.birthday} active={dragging==="birthday"} onDown={e=>beginDrag("birthday",e)}/>}
+            {motivation&&<DragHandle name="WORD" slot={draftSlots.word} active={dragging==="word"} onDown={e=>beginDrag("word",e)}/>}
+            {dayEnabled&&<DragHandle name="DAY" slot={draftSlots.day} active={dragging==="day"} onDown={e=>beginDrag("day",e)}/>}
           </div>
         </div>
       </div>
@@ -341,7 +370,11 @@ export default function Home(){
       <SettingRow index="05" title={t.year}>
         <div className="stack">
           <Toggle value={yearProgress} onChange={setYearProgress} labels={[t.off,t.on]}/>
-          {yearProgress&&<div className="subControl"><span>{t.value}</span><Segment value={progressMode} onChange={v=>setProgressMode(v as ProgressMode)} options={[["percent",t.percent],["days",t.daysMode]]}/></div>}
+          {yearProgress&&<>
+            <div className="subControl"><span>{t.value}</span><Segment value={progressMode} onChange={v=>setProgressMode(v as ProgressMode)} options={[["percent",t.percent],["days",t.daysMode]]}/></div>
+            <div className="subControl"><span>{t.yearBar}</span><Toggle value={yearBar} onChange={setYearBar} labels={[t.off,t.on]}/></div>
+            <div className="subControl"><span>{t.yearDots}</span><Toggle value={yearDots} onChange={setYearDots} labels={[t.off,t.on]}/></div>
+          </>}
         </div>
       </SettingRow>
 
@@ -370,7 +403,7 @@ export default function Home(){
         <div className="randomButtons">
           <button className="outlineButton" onClick={()=>setPreviewSeed(Math.floor(Math.random()*1000000))}>{t.randomizePreview}</button>
           <button className="solidButton" onClick={randomizeAll}>{t.randomizeAll}</button>
-          <button className="outlineButton" onClick={()=>setSlots({object:"tl",birthday:"tr",word:"bl",day:"br"})}>{t.resetLayout}</button>
+          <button className="outlineButton" onClick={()=>{setSlots(initialSlots);setDraftSlots(initialSlots)}}>{t.resetLayout}</button>
         </div>
       </SettingRow>
     </section>

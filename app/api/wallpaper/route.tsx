@@ -30,23 +30,45 @@ function PixelSprite({matrix,color,px}:{matrix:number[][];color:string;px:number
 }
 
 function CornerFrame({fg,border}:{fg:string;border:number}){
-  const s="14%";
+  const t=Math.max(2,border*2);
+  const s="23%";
+  const dot=Math.max(4,border*4);
   return <>
-    <div style={{display:"flex",position:"absolute",left:0,top:0,width:s,height:border,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:0,top:0,width:border,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,top:0,width:s,height:border,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,top:0,width:border,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:0,bottom:0,width:s,height:border,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:0,bottom:0,width:border,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,bottom:0,width:s,height:border,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,bottom:0,width:border,height:s,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",left:0,top:0,width:s,height:t,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",left:0,top:0,width:t,height:s,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",right:0,top:0,width:s,height:t,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",right:0,top:0,width:t,height:s,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",left:0,bottom:0,width:s,height:t,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",left:0,bottom:0,width:t,height:s,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",right:0,bottom:0,width:s,height:t,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",right:0,bottom:0,width:t,height:s,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",left:-dot/2,top:-dot/2,width:dot,height:dot,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",right:-dot/2,top:-dot/2,width:dot,height:dot,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",left:-dot/2,bottom:-dot/2,width:dot,height:dot,background:fg}}/>
+    <div style={{display:"flex",position:"absolute",right:-dot/2,bottom:-dot/2,width:dot,height:dot,background:fg}}/>
   </>;
 }
 
 function BlockFrame({style,fg,border}:{style:FrameStyle;fg:string;border:number}){
   if(style==="none") return null;
   if(style==="corners") return <CornerFrame fg={fg} border={border}/>;
-  return <div style={{display:"flex",position:"absolute",inset:0,border:`${border}px solid ${fg}`}}/>;
+  return <div style={{display:"flex",position:"absolute",inset:0,border:`${Math.max(2,border*2)}px solid ${fg}`}}/>;
+}
+
+function YearDots({day,total,fg,scale}:{day:number;total:number;fg:string;scale:number}){
+  const cols=25;
+  const rows=Math.ceil(total/cols);
+  const stepX=10;
+  const stepY=8;
+  const width=(cols-1)*stepX+4;
+  const height=(rows-1)*stepY+4;
+  return <svg width={Math.round(260*scale)} height={Math.round(112*scale)} viewBox={`0 0 ${width} ${height}`}>
+    {Array.from({length:total},(_,i)=>{
+      const x=(i%cols)*stepX+2;
+      const y=Math.floor(i/cols)*stepY+2;
+      return <circle key={i} cx={x} cy={y} r="1.65" fill={fg} opacity={i<day?1:.16}/>;
+    })}
+  </svg>;
 }
 
 export async function GET(request:Request){
@@ -57,6 +79,8 @@ export async function GET(request:Request){
   const lang=searchParams.get("lang")==="en"?"en":"ru";
   const yearEnabled=bool(searchParams.get("year"),true);
   const yearMode=searchParams.get("yearMode")==="percent"?"percent":"days";
+  const yearBar=bool(searchParams.get("yearBar"),true);
+  const yearDots=bool(searchParams.get("yearDots"),false);
   const birthday=searchParams.get("birthday")??"off";
 
   const objectRaw=searchParams.get("object")??"flowers";
@@ -189,8 +213,8 @@ export async function GET(request:Request){
     }}>
       <BlockFrame style={frameStyle} fg={fg} border={border}/>
       {details&&label&&<div style={{
-        display:"flex",position:"absolute",left:Math.round(12*scale),top:Math.round(10*scale),
-        fontSize:Math.round(10*scale),letterSpacing:"0.14em",opacity:.42
+        display:"flex",position:"absolute",left:Math.round(14*scale),top:Math.round(14*scale),
+        fontSize:Math.round(11*scale),letterSpacing:"0.14em",opacity:.42
       }}>{label}</div>}
       {children}
     </div>
@@ -214,8 +238,9 @@ export async function GET(request:Request){
           <div style={{display:"flex",fontSize:Math.round(50*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.055em"}}>
             {daysUntilBirthday(parts.year,parts.month,parts.day,birthday)}
           </div>
-          <div style={{display:"flex",fontSize:Math.round(12*scale),letterSpacing:"0.11em",marginTop:Math.round(16*scale),textAlign:"center"}}>
-            {lang==="ru"?"ДНЕЙ ДО ДНЯ РОЖДЕНИЯ":"DAYS UNTIL BIRTHDAY"}
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",fontSize:Math.round(12*scale),lineHeight:1.25,letterSpacing:"0.11em",marginTop:Math.round(22*scale),textAlign:"center"}}>
+            <span>{lang==="ru"?"ДНЕЙ ДО":"DAYS UNTIL"}</span>
+            <span>{lang==="ru"?"ДНЯ РОЖДЕНИЯ":"BIRTHDAY"}</span>
           </div>
         </>,
         "// BIRTHDAY"
@@ -233,8 +258,9 @@ export async function GET(request:Request){
           <div style={{display:"flex",fontSize:Math.round(46*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.05em"}}>
             {String(doy).padStart(3,"0")}
           </div>
-          <div style={{display:"flex",fontSize:Math.round(12*scale),letterSpacing:"0.12em",marginTop:Math.round(16*scale)}}>
-            {lang==="ru"?"ДЕНЬ ГОДА":"DAY OF YEAR"}
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",fontSize:Math.round(12*scale),lineHeight:1.25,letterSpacing:"0.12em",marginTop:Math.round(22*scale),textAlign:"center"}}>
+            <span>{lang==="ru"?"ДЕНЬ":"DAY OF"}</span>
+            <span>{lang==="ru"?"ГОДА":"YEAR"}</span>
           </div>
         </>,
         "// DAY_INDEX"
@@ -253,9 +279,12 @@ export async function GET(request:Request){
         <div style={{display:"flex",fontSize:Math.round(54*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.055em"}}>
           {displayYear}
         </div>
-        <div style={{display:"flex",width:"80%",height:Math.max(4,Math.round(5*scale)),border:`${border}px solid ${fg}`,marginTop:Math.round(24*scale)}}>
+        {yearBar&&<div style={{display:"flex",width:"80%",height:Math.max(4,Math.round(5*scale)),border:`${border}px solid ${fg}`,marginTop:Math.round(22*scale)}}>
           <div style={{display:"flex",width:`${progress}%`,height:"100%",background:fg}}/>
-        </div>
+        </div>}
+        {yearDots&&<div style={{display:"flex",marginTop:Math.round(yearBar?16:22)*scale,opacity:.96}}>
+          <YearDots day={doy} total={totalDays} fg={fg} scale={scale}/>
+        </div>}
       </div>}
 
       {(signature==="logo"||signature==="both")&&<div style={{
