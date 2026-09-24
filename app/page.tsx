@@ -196,8 +196,11 @@ export default function Home(){
   const [objectSize,setObjectSize]=useState<ObjectSize>("m");
   const [motivation,setMotivation]=useState(true);
   const [wordSize,setWordSize]=useState<ObjectSize>("m");
+  const [dayEnabled,setDayEnabled]=useState(true);
   const [details,setDetails]=useState(true);
-  const [slots,setSlots]=useState<Record<ModuleKey,Slot>>({object:"tl",birthday:"tr",word:"bl"});
+  const [frameStyle,setFrameStyle]=useState<FrameStyle>("corners");
+  const [signature,setSignature]=useState<Signature>("logo");
+  const [slots,setSlots]=useState<Record<ModuleKey,Slot>>({object:"tl",birthday:"tr",word:"bl",day:"br"});
   const [previewSeed,setPreviewSeed]=useState<number|null>(null);
   const [copied,setCopied]=useState(false);
   const [timeZone,setTimeZone]=useState("UTC");
@@ -292,7 +295,7 @@ export default function Home(){
               </div>
               <div className="homeIndicator"/>
             </>}
-            <DragHandle name="OBJECT" slot={slots.object} active={dragging==="object"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("object")}}/>
+            {objectMode!=="off"&&<DragHandle name="OBJECT" slot={slots.object} active={dragging==="object"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("object")}}/>}
             {birthdayEnabled&&<DragHandle name="BIRTHDAY" slot={slots.birthday} active={dragging==="birthday"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("birthday")}}/>}
             {motivation&&<DragHandle name="WORD" slot={slots.word} active={dragging==="word"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("word")}}/>}
             {dayEnabled&&<DragHandle name="DAY" slot={slots.day} active={dragging==="day"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("day")}}/>}
