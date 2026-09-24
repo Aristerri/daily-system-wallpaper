@@ -1,19 +1,19 @@
-# DAILY SYSTEM v0.3.1
+# DAILY SYSTEM v0.4
 
-TypeScript/Vercel build fix for size-map indexing.
+Major wallpaper-layout redesign.
 
+- Wallpaper uses a technical block grid.
+- Year Progress is locked to the central full-width block.
+- Object / Birthday / Word occupy three of four surrounding cells.
+- Drag their handles directly inside the phone preview to swap grid cells.
+- Removed all position / distance sliders.
+- Native browser color picker + HEX input (Safari-compatible).
+- `RANDOMIZE ALL WALLPAPER` randomizes palette, object family, sizes, UI details and block layout.
+- Restored the simpler Year Progress bar in the central block.
+- Website shows visible `V.04` in header.
+- RU / EN site switch remains visible.
+- iPhone preview uses device notch / Dynamic Island plus custom camera/flashlight lock-screen controls.
+- Automation guide expanded to 10 explicit steps.
+- Lower wallpaper content stays above the Lock Screen bottom controls.
 
-Changes in this build:
-- fixed color controls with visible HSL gradient tracks;
-- added detailed layout controls;
-- independent vertical position for Year / Object / Birthday / Word;
-- configurable top and bottom safe areas;
-- lower safe area protects iPhone Lock Screen flashlight/camera buttons and home indicator;
-- Year Progress styles: Ticks / Ring / Months;
-- Year/Birthday/Object/Word sizes S/M/L;
-- global left/center/right alignment;
-- richer asymmetric wallpaper composition;
-- more iOS-like preview date/time and bottom system controls;
-- Apple touch icon + SVG favicon.
-
-Deploy by uploading/replacing the repository files and committing. Vercel redeploys automatically.
+After committing to GitHub, Vercel redeploys automatically.
