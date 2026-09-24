@@ -7,7 +7,6 @@ import { MOTIVATION } from "../../../lib/motivation";
 export const runtime = "edge";
 
 type Slot = "tl" | "tr" | "bl" | "br";
-type FrameStyle = "frame" | "corners";
 
 function cleanHex(value:string|null,fallback:string){
   const v=(value??"").replace("#","");
@@ -29,30 +28,6 @@ function PixelSprite({matrix,color,px}:{matrix:number[][];color:string;px:number
   </svg>
 }
 
-function CornerFrame({fg,border}:{fg:string;border:number}){
-  const t=Math.max(3,border*3);
-  const s="30%";
-  const dot=Math.max(5,border*5);
-  return <>
-    <div style={{display:"flex",position:"absolute",left:0,top:0,width:s,height:t,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:0,top:0,width:t,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,top:0,width:s,height:t,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,top:0,width:t,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:0,bottom:0,width:s,height:t,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:0,bottom:0,width:t,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,bottom:0,width:s,height:t,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:0,bottom:0,width:t,height:s,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:-dot/2,top:-dot/2,width:dot,height:dot,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:-dot/2,top:-dot/2,width:dot,height:dot,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",left:-dot/2,bottom:-dot/2,width:dot,height:dot,background:fg}}/>
-    <div style={{display:"flex",position:"absolute",right:-dot/2,bottom:-dot/2,width:dot,height:dot,background:fg}}/>
-  </>;
-}
-
-function BlockFrame({style,fg,border}:{style:FrameStyle;fg:string;border:number}){
-  if(style==="corners") return <CornerFrame fg={fg} border={border}/>;
-  return <div style={{display:"flex",position:"absolute",inset:0,border:`${Math.max(3,border*3)}px solid ${fg}`}}/>;
-}
 
 function YearDots({day,total,fg,scale}:{day:number;total:number;fg:string;scale:number}){
   const cols=25;
@@ -89,9 +64,6 @@ export async function GET(request:Request){
   const wordSize=(["s","m","l"].includes(searchParams.get("wordSize")??"")?searchParams.get("wordSize")!:"m") as "s"|"m"|"l";
   const dayEnabled=bool(searchParams.get("day"),true);
   const details=bool(searchParams.get("details"),true);
-
-  const frameRaw=searchParams.get("frame")??"corners";
-  const frameStyle=(frameRaw==="frame" ? "frame" : "corners") as FrameStyle;
   const signature=searchParams.get("signature")??"logo";
   const timeZone=searchParams.get("tz")||"UTC";
 
@@ -210,7 +182,6 @@ export async function GET(request:Request){
       padding:Math.round(20*scale),flexDirection:"column",justifyContent:"center",alignItems:"center",
       overflow:"hidden"
     }}>
-      <BlockFrame style={frameStyle} fg={fg} border={border}/>
       {details&&label&&<div style={{
         display:"flex",position:"absolute",left:Math.round(14*scale),top:Math.round(14*scale),
         fontSize:Math.round(11*scale),letterSpacing:"0.14em",opacity:.42
@@ -278,7 +249,6 @@ export async function GET(request:Request){
         padding:`${Math.round(16*scale)}px ${Math.round(20*scale)}px`,
         flexDirection:"column",justifyContent:"center",alignItems:"center"
       }}>
-        <BlockFrame style={frameStyle} fg={fg} border={border}/>
         {details&&<div style={{
           display:"flex",position:"absolute",left:Math.round(12*scale),top:Math.round(14*scale),
           fontSize:Math.round(10*scale),letterSpacing:"0.14em",opacity:.42
@@ -308,7 +278,7 @@ export async function GET(request:Request){
 
       {(signature==="text"||signature==="both")&&<div style={{
         display:"flex",position:"absolute",left:"50%",bottom:Math.round(device.height*.078),transform:"translateX(-50%)",
-        fontSize:Math.round(8*scale),letterSpacing:"0.18em",opacity:.48
+        fontSize:Math.round(11*scale),letterSpacing:"0.16em",opacity:.56
       }}>ARISTERRI</div>}
     </div>,
     {width:device.width,height:device.height}

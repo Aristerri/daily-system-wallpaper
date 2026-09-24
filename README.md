@@ -1,12 +1,12 @@
-# DAILY SYSTEM v0.6.1
+# DAILY SYSTEM v0.6.2
 
-Wallpaper layout refinement:
+Wallpaper cleanup update:
 
-- DAY INDEX and BIRTHDAY values now form one horizontally centered group.
-- Small descriptor text sits to the right of the large number with an ~8 px gap.
-- Descriptor text is left-aligned and split into two lines.
-- Block frame choice is now only FRAME or CORNERS.
-- RANDOMIZE ALL no longer turns the block frame completely off.
-- FRAME and CORNERS were made thicker and more visible.
-- 365/366 day dots and Year Status Bar remain independent and can be enabled together.
-- Drag preview optimization from v0.6 remains unchanged.
+- removed block frame / corner decoration completely;
+- removed the FRAME / CORNERS setting from the website;
+- removed decorative corner nodes/points;
+- kept 365/366 DAY DOTS as the only dot-based progress visualization;
+- increased the centered ARISTERRI text signature by a few pixels;
+- kept all adaptive layout, year bar/dots, randomizer, and drag-preview behavior from v0.6.1.
+
+Upload the contents of this ZIP directly to the repository root. Do not upload the outer folder as a nested folder.
