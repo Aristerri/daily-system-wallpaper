@@ -7,7 +7,7 @@ import { MOTIVATION } from "../../../lib/motivation";
 export const runtime = "edge";
 
 type Slot = "tl" | "tr" | "bl" | "br";
-type FrameStyle = "frame" | "corners" | "none";
+type FrameStyle = "frame" | "corners";
 
 function cleanHex(value:string|null,fallback:string){
   const v=(value??"").replace("#","");
@@ -30,9 +30,9 @@ function PixelSprite({matrix,color,px}:{matrix:number[][];color:string;px:number
 }
 
 function CornerFrame({fg,border}:{fg:string;border:number}){
-  const t=Math.max(2,border*2);
-  const s="23%";
-  const dot=Math.max(4,border*4);
+  const t=Math.max(3,border*3);
+  const s="30%";
+  const dot=Math.max(5,border*5);
   return <>
     <div style={{display:"flex",position:"absolute",left:0,top:0,width:s,height:t,background:fg}}/>
     <div style={{display:"flex",position:"absolute",left:0,top:0,width:t,height:s,background:fg}}/>
@@ -50,9 +50,8 @@ function CornerFrame({fg,border}:{fg:string;border:number}){
 }
 
 function BlockFrame({style,fg,border}:{style:FrameStyle;fg:string;border:number}){
-  if(style==="none") return null;
   if(style==="corners") return <CornerFrame fg={fg} border={border}/>;
-  return <div style={{display:"flex",position:"absolute",inset:0,border:`${Math.max(2,border*2)}px solid ${fg}`}}/>;
+  return <div style={{display:"flex",position:"absolute",inset:0,border:`${Math.max(3,border*3)}px solid ${fg}`}}/>;
 }
 
 function YearDots({day,total,fg,scale}:{day:number;total:number;fg:string;scale:number}){
@@ -92,7 +91,7 @@ export async function GET(request:Request){
   const details=bool(searchParams.get("details"),true);
 
   const frameRaw=searchParams.get("frame")??"corners";
-  const frameStyle=(["frame","corners","none"].includes(frameRaw)?frameRaw:"corners") as FrameStyle;
+  const frameStyle=(frameRaw==="frame" ? "frame" : "corners") as FrameStyle;
   const signature=searchParams.get("signature")??"logo";
   const timeZone=searchParams.get("tz")||"UTC";
 
@@ -234,15 +233,19 @@ export async function GET(request:Request){
       )}
 
       {birthday!=="off"&&moduleBox("birthday",
-        <>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div style={{display:"flex",fontSize:Math.round(50*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.055em"}}>
             {daysUntilBirthday(parts.year,parts.month,parts.day,birthday)}
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",fontSize:Math.round(12*scale),lineHeight:1.25,letterSpacing:"0.11em",marginTop:Math.round(22*scale),textAlign:"center"}}>
+          <div style={{
+            display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",
+            fontSize:Math.round(12*scale),lineHeight:1.18,letterSpacing:"0.10em",
+            marginLeft:Math.max(6,Math.round(8*scale)),textAlign:"left"
+          }}>
             <span>{lang==="ru"?"ДНЕЙ ДО":"DAYS UNTIL"}</span>
             <span>{lang==="ru"?"ДНЯ РОЖДЕНИЯ":"BIRTHDAY"}</span>
           </div>
-        </>,
+        </div>,
         "// BIRTHDAY"
       )}
 
@@ -254,15 +257,19 @@ export async function GET(request:Request){
       )}
 
       {dayEnabled&&moduleBox("day",
-        <>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div style={{display:"flex",fontSize:Math.round(46*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.05em"}}>
             {String(doy).padStart(3,"0")}
           </div>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",fontSize:Math.round(12*scale),lineHeight:1.25,letterSpacing:"0.12em",marginTop:Math.round(22*scale),textAlign:"center"}}>
+          <div style={{
+            display:"flex",flexDirection:"column",alignItems:"flex-start",justifyContent:"center",
+            fontSize:Math.round(12*scale),lineHeight:1.18,letterSpacing:"0.11em",
+            marginLeft:Math.max(6,Math.round(8*scale)),textAlign:"left"
+          }}>
             <span>{lang==="ru"?"ДЕНЬ":"DAY OF"}</span>
             <span>{lang==="ru"?"ГОДА":"YEAR"}</span>
           </div>
-        </>,
+        </div>,
         "// DAY_INDEX"
       )}
 

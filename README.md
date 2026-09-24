@@ -1,9 +1,12 @@
-# DAILY SYSTEM v0.6.0
+# DAILY SYSTEM v0.6.1
 
-Wallpaper/preview update:
-- stronger FRAME / CORNERS visuals;
-- birthday and day labels are separated from the main number and wrap into two lines;
-- Year Progress can show STATUS BAR and 365/366 DAY DOTS independently or together;
-- passed days are bright, future days are dim;
-- drag preview no longer regenerates the PNG continuously: module positions move locally during drag and the server image updates once on release;
-- daily automation logic is unchanged: only date-derived content changes automatically.
+Wallpaper layout refinement:
+
+- DAY INDEX and BIRTHDAY values now form one horizontally centered group.
+- Small descriptor text sits to the right of the large number with an ~8 px gap.
+- Descriptor text is left-aligned and split into two lines.
+- Block frame choice is now only FRAME or CORNERS.
+- RANDOMIZE ALL no longer turns the block frame completely off.
+- FRAME and CORNERS were made thicker and more visible.
+- 365/366 day dots and Year Status Bar remain independent and can be enabled together.
+- Drag preview optimization from v0.6 remains unchanged.

@@ -7,7 +7,7 @@ type ObjectMode = "off" | "flowers" | "animals" | "geometry";
 type ObjectSize = "s" | "m" | "l";
 type Lang = "ru" | "en";
 type ProgressMode = "percent" | "days";
-type FrameStyle = "frame" | "corners" | "none";
+type FrameStyle = "frame" | "corners";
 type Signature = "off" | "logo" | "text" | "both";
 type Slot = "tl" | "tr" | "bl" | "br";
 type ModuleKey = "object" | "birthday" | "word" | "day";
@@ -52,7 +52,6 @@ const COPY = {
     geometry: "GEOMETRY",
     frame: "FRAME",
     corners: "CORNERS",
-    none: "NONE",
     logo: "LOGO",
     text: "ARISTERRI",
     both: "LOGO + TEXT",
@@ -120,7 +119,6 @@ const COPY = {
     geometry: "ГЕОМЕТРИЯ",
     frame: "РАМКА",
     corners: "УГОЛКИ",
-    none: "НЕТ",
     logo: "ЛОГО",
     text: "ARISTERRI",
     both: "ЛОГО + ТЕКСТ",
@@ -297,7 +295,7 @@ export default function Home(){
     setProgressMode(Math.random()>.5?"percent":"days");
     setObjectSize((["s","m","l"] as ObjectSize[])[Math.floor(Math.random()*3)]);
     setWordSize((["s","m","l"] as ObjectSize[])[Math.floor(Math.random()*3)]);
-    setFrameStyle((["frame","corners","none"] as FrameStyle[])[Math.floor(Math.random()*3)]);
+    setFrameStyle((["frame","corners"] as FrameStyle[])[Math.floor(Math.random()*2)]);
     setDetails(Math.random()>.25);
     setSignature((["logo","text","both","off"] as Signature[])[Math.floor(Math.random()*4)]);
 
@@ -313,7 +311,7 @@ export default function Home(){
       <div>DAILY SYSTEM®</div>
       <div className="topbarCenter">{t.navTitle}</div>
       <div className="headerRight">
-        <span className="versionTag">V.06</span>
+        <span className="versionTag">V.06.1</span>
         <div className="headerActions"><button className={siteLang==="ru"?"langActive":""} onClick={()=>setSiteLang("ru")}>RU</button><span>/</span><button className={siteLang==="en"?"langActive":""} onClick={()=>setSiteLang("en")}>EN</button></div>
       </div>
     </header>
@@ -364,7 +362,7 @@ export default function Home(){
       <SettingRow index="03" title={t.wallpaperLanguage}><Segment value={lang} onChange={v=>setLang(v as Lang)} options={[["ru","RU"],["en","EN"]]}/></SettingRow>
 
       <SettingRow index="04" title={t.frameStyle}>
-        <Segment value={frameStyle} onChange={v=>setFrameStyle(v as FrameStyle)} options={[["frame",t.frame],["corners",t.corners],["none",t.none]]}/>
+        <Segment value={frameStyle} onChange={v=>setFrameStyle(v as FrameStyle)} options={[["frame",t.frame],["corners",t.corners]]}/>
       </SettingRow>
 
       <SettingRow index="05" title={t.year}>
