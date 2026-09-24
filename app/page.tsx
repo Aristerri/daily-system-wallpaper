@@ -7,8 +7,10 @@ type ObjectMode = "off" | "flowers" | "animals" | "geometry";
 type ObjectSize = "s" | "m" | "l";
 type Lang = "ru" | "en";
 type ProgressMode = "percent" | "days";
+type FrameStyle = "frame" | "corners" | "none";
+type Signature = "off" | "logo" | "text" | "both";
 type Slot = "tl" | "tr" | "bl" | "br";
-type ModuleKey = "object" | "birthday" | "word";
+type ModuleKey = "object" | "birthday" | "word" | "day";
 
 const SLOTS: Slot[] = ["tl","tr","bl","br"];
 
@@ -30,7 +32,10 @@ const COPY = {
     birthday: "BIRTHDAY COUNTDOWN",
     object: "DAILY OBJECT",
     motivation: "DAILY MOTIVATION",
+    day: "DAY INDEX",
     details: "UI DETAILS",
+    frameStyle: "BLOCK FRAME",
+    signature: "SIGNATURE",
     preview: "RANDOMIZER",
     background: "BACKGROUND",
     primary: "PRIMARY",
@@ -43,6 +48,12 @@ const COPY = {
     flowers: "FLOWERS",
     animals: "ANIMALS",
     geometry: "GEOMETRY",
+    frame: "FRAME",
+    corners: "CORNERS",
+    none: "NONE",
+    logo: "LOGO",
+    text: "ARISTERRI",
+    both: "LOGO + TEXT",
     randomizePreview: "RANDOMIZE OBJECT + WORD",
     randomizeAll: "RANDOMIZE ALL WALLPAPER",
     resetLayout: "RESET GRID",
@@ -68,7 +79,7 @@ const COPY = {
       ["10","DONE","Every day the same URL returns a new daily object/word while keeping your chosen design."]
     ],
     note: "Apple can change Shortcuts labels between iOS versions. If a label is slightly different, use the equivalent URL / Get Contents / Set Wallpaper actions.",
-    footer: "V.04 · URL-BASED SETTINGS · NO ACCOUNT · NO DATABASE"
+    footer: "V.05 · URL-BASED SETTINGS · NO ACCOUNT · NO DATABASE"
   },
   ru: {
     navTitle: "ГЕНЕРАТОР ДИНАМИЧЕСКИХ ОБОЕВ",
@@ -87,7 +98,10 @@ const COPY = {
     birthday: "ДО ДНЯ РОЖДЕНИЯ",
     object: "ОБЪЕКТ ДНЯ",
     motivation: "СЛОВО ДНЯ",
+    day: "НОМЕР ДНЯ",
     details: "UI-ДЕТАЛИ",
+    frameStyle: "РАМКА БЛОКОВ",
+    signature: "ПОДПИСЬ",
     preview: "РАНДОМАЙЗЕР",
     background: "ФОН",
     primary: "ОСНОВНОЙ",
@@ -100,6 +114,12 @@ const COPY = {
     flowers: "ЦВЕТЫ",
     animals: "ЖИВОТНЫЕ",
     geometry: "ГЕОМЕТРИЯ",
+    frame: "РАМКА",
+    corners: "УГОЛКИ",
+    none: "НЕТ",
+    logo: "ЛОГО",
+    text: "ARISTERRI",
+    both: "ЛОГО + ТЕКСТ",
     randomizePreview: "СМЕНИТЬ ОБЪЕКТ + СЛОВО",
     randomizeAll: "ПОЛНОСТЬЮ РАНДОМАЙЗИТЬ ОБОИ",
     resetLayout: "СБРОСИТЬ СЕТКУ",
@@ -197,10 +217,12 @@ export default function Home(){
       birthday:birthdayEnabled?birthdayMD:"off",
       object:objectMode,objectSize,
       motivation:motivation?"1":"0",wordSize,
-      details:details?"1":"0",objectSlot:slots.object,birthdaySlot:slots.birthday,wordSlot:slots.word,
+      day:dayEnabled?"1":"0",
+      details:details?"1":"0",frame:frameStyle,signature,
+      objectSlot:slots.object,birthdaySlot:slots.birthday,wordSlot:slots.word,daySlot:slots.day,
       tz:timeZone
     });
-  },[device,background,primary,lang,yearProgress,progressMode,birthdayEnabled,birthdayMD,objectMode,objectSize,motivation,wordSize,details,slots,timeZone]);
+  },[device,background,primary,lang,yearProgress,progressMode,birthdayEnabled,birthdayMD,objectMode,objectSize,motivation,wordSize,dayEnabled,details,frameStyle,signature,slots,timeZone]);
 
   const permanentPath=`/api/wallpaper?${query.toString()}`;
   const previewPath=`${permanentPath}${previewSeed===null?"":`&seed=${previewSeed}`}`;
@@ -233,8 +255,10 @@ export default function Home(){
     setObjectSize((["s","m","l"] as ObjectSize[])[Math.floor(Math.random()*3)]);
     setWordSize((["s","m","l"] as ObjectSize[])[Math.floor(Math.random()*3)]);
     setDetails(Math.random()>.25);
+    setFrameStyle((["frame","corners","none"] as FrameStyle[])[Math.floor(Math.random()*3)]);
+    setSignature((["logo","text","both","off"] as Signature[])[Math.floor(Math.random()*4)]);
     const s=shuffle(SLOTS);
-    setSlots({object:s[0],birthday:s[1],word:s[2]});
+    setSlots({object:s[0],birthday:s[1],word:s[2],day:s[3]});
     setPreviewSeed(Math.floor(Math.random()*1000000));
   };
 
@@ -243,7 +267,7 @@ export default function Home(){
       <div>DAILY SYSTEM®</div>
       <div className="topbarCenter">{t.navTitle}</div>
       <div className="headerRight">
-        <span className="versionTag">V.04</span>
+        <span className="versionTag">V.05</span>
         <div className="headerActions"><button className={siteLang==="ru"?"langActive":""} onClick={()=>setSiteLang("ru")}>RU</button><span>/</span><button className={siteLang==="en"?"langActive":""} onClick={()=>setSiteLang("en")}>EN</button></div>
       </div>
     </header>
@@ -271,13 +295,14 @@ export default function Home(){
             <DragHandle name="OBJECT" slot={slots.object} active={dragging==="object"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("object")}}/>
             {birthdayEnabled&&<DragHandle name="BIRTHDAY" slot={slots.birthday} active={dragging==="birthday"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("birthday")}}/>}
             {motivation&&<DragHandle name="WORD" slot={slots.word} active={dragging==="word"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("word")}}/>}
+            {dayEnabled&&<DragHandle name="DAY" slot={slots.day} active={dragging==="day"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("day")}}/>}
           </div>
         </div>
       </div>
     </section>
 
     <section className="config">
-      <div className="configTitle"><span>{t.configuration}</span><span>01—09</span></div>
+      <div className="configTitle"><span>{t.configuration}</span><span>01—12</span></div>
 
       <SettingRow index="01" title={t.device}>
         <select value={device} onChange={e=>setDevice(e.target.value)}>{DEVICES.map(item=><option key={item.id} value={item.id}>{item.label}</option>)}</select>
@@ -292,35 +317,43 @@ export default function Home(){
 
       <SettingRow index="03" title={t.wallpaperLanguage}><Segment value={lang} onChange={v=>setLang(v as Lang)} options={[["ru","RU"],["en","EN"]]}/></SettingRow>
 
-      <SettingRow index="04" title={t.year}>
+      <SettingRow index="04" title={t.frameStyle}>
+        <Segment value={frameStyle} onChange={v=>setFrameStyle(v as FrameStyle)} options={[["frame",t.frame],["corners",t.corners],["none",t.none]]}/>
+      </SettingRow>
+
+      <SettingRow index="05" title={t.year}>
         <div className="stack">
           <Toggle value={yearProgress} onChange={setYearProgress} labels={[t.off,t.on]}/>
           {yearProgress&&<div className="subControl"><span>{t.value}</span><Segment value={progressMode} onChange={v=>setProgressMode(v as ProgressMode)} options={[["percent",t.percent],["days",t.daysMode]]}/></div>}
         </div>
       </SettingRow>
 
-      <SettingRow index="05" title={t.object}>
+      <SettingRow index="06" title={t.object}>
         <div className="stack">
           <Segment value={objectMode} onChange={v=>setObjectMode(v as ObjectMode)} options={[["off",t.off],["flowers",t.flowers],["animals",t.animals],["geometry",t.geometry]]}/>
           {objectMode!=="off"&&<div className="subControl"><span>{t.size}</span><Segment value={objectSize} onChange={v=>setObjectSize(v as ObjectSize)} options={[["s","S"],["m","M"],["l","L"]]}/></div>}
         </div>
       </SettingRow>
 
-      <SettingRow index="06" title={t.birthday}>
+      <SettingRow index="07" title={t.birthday}>
         <div className="stack"><Toggle value={birthdayEnabled} onChange={setBirthdayEnabled} labels={[t.off,t.on]}/>{birthdayEnabled&&<input type="date" value={birthday} onChange={e=>setBirthday(e.target.value)}/>}</div>
       </SettingRow>
 
-      <SettingRow index="07" title={t.motivation}>
+      <SettingRow index="08" title={t.motivation}>
         <div className="stack"><Toggle value={motivation} onChange={setMotivation} labels={[t.off,t.on]}/>{motivation&&<div className="subControl"><span>{t.size}</span><Segment value={wordSize} onChange={v=>setWordSize(v as ObjectSize)} options={[["s","S"],["m","M"],["l","L"]]}/></div>}</div>
       </SettingRow>
 
-      <SettingRow index="08" title={t.details}><Toggle value={details} onChange={setDetails} labels={[t.off,t.on]}/></SettingRow>
+      <SettingRow index="09" title={t.day}><Toggle value={dayEnabled} onChange={setDayEnabled} labels={[t.off,t.on]}/></SettingRow>
+      <SettingRow index="10" title={t.details}><Toggle value={details} onChange={setDetails} labels={[t.off,t.on]}/></SettingRow>
+      <SettingRow index="11" title={t.signature}>
+        <Segment value={signature} onChange={v=>setSignature(v as Signature)} options={[["off",t.off],["logo",t.logo],["text",t.text],["both",t.both]]}/>
+      </SettingRow>
 
-      <SettingRow index="09" title={t.preview}>
+      <SettingRow index="12" title={t.preview}>
         <div className="randomButtons">
           <button className="outlineButton" onClick={()=>setPreviewSeed(Math.floor(Math.random()*1000000))}>{t.randomizePreview}</button>
           <button className="solidButton" onClick={randomizeAll}>{t.randomizeAll}</button>
-          <button className="outlineButton" onClick={()=>setSlots({object:"tl",birthday:"tr",word:"bl"})}>{t.resetLayout}</button>
+          <button className="outlineButton" onClick={()=>setSlots({object:"tl",birthday:"tr",word:"bl",day:"br"})}>{t.resetLayout}</button>
         </div>
       </SettingRow>
     </section>
@@ -353,7 +386,7 @@ function ColorPicker({label,value,onChange}:{label:string;value:string;onChange:
   return <div className="nativeColorPanel">
     <div className="colorPanelHead"><span>{label}</span><span className="colorValue">#{safe}</span></div>
     <label className="nativeColorTarget" style={{background:`#${safe}`}}>
-      <input type="color" value={`#${safe}`} onChange={e=>onChange(e.target.value.slice(1).toUpperCase())}/>
+      <input type="color" value={`#${safe}`} onInput={e=>onChange((e.currentTarget as HTMLInputElement).value.slice(1).toUpperCase())} onChange={e=>onChange(e.target.value.slice(1).toUpperCase())}/>
       <span>CLICK TO PICK COLOR</span>
     </label>
     <label className="hexRow"><span>#</span><input value={value} maxLength={6} onChange={e=>onChange(e.target.value.replace(/[^0-9a-fA-F]/g,"").slice(0,6).toUpperCase())}/></label>
