@@ -196,10 +196,7 @@ export default function Home(){
   const [objectSize,setObjectSize]=useState<ObjectSize>("m");
   const [motivation,setMotivation]=useState(true);
   const [wordSize,setWordSize]=useState<ObjectSize>("m");
-  const [dayEnabled,setDayEnabled]=useState(true);
   const [details,setDetails]=useState(true);
-  const [frameStyle,setFrameStyle]=useState<FrameStyle>("corners");
-  const [signature,setSignature]=useState<Signature>("logo");
   const [slots,setSlots]=useState<Record<ModuleKey,Slot>>({object:"tl",birthday:"tr",word:"bl",day:"br"});
   const [previewSeed,setPreviewSeed]=useState<number|null>(null);
   const [copied,setCopied]=useState(false);
@@ -252,14 +249,28 @@ export default function Home(){
 
   const randomizeAll=()=>{
     const bg=randomHex();
-    setBackground(bg); setPrimary(contrastColor(bg));
+    setBackground(bg);
+    setPrimary(contrastColor(bg));
+
+    setYearProgress(Math.random() > 0.22);
+    setBirthdayEnabled(Math.random() > 0.35);
+    setMotivation(Math.random() > 0.28);
+    setDayEnabled(Math.random() > 0.38);
+
+    const objectOn = Math.random() > 0.20;
+    setObjectMode(
+      objectOn
+        ? (["flowers","animals","geometry"] as ObjectMode[])[Math.floor(Math.random()*3)]
+        : "off"
+    );
+
     setProgressMode(Math.random()>.5?"percent":"days");
-    setObjectMode((["flowers","animals","geometry"] as ObjectMode[])[Math.floor(Math.random()*3)]);
     setObjectSize((["s","m","l"] as ObjectSize[])[Math.floor(Math.random()*3)]);
     setWordSize((["s","m","l"] as ObjectSize[])[Math.floor(Math.random()*3)]);
-    setDetails(Math.random()>.25);
     setFrameStyle((["frame","corners","none"] as FrameStyle[])[Math.floor(Math.random()*3)]);
+    setDetails(Math.random()>.25);
     setSignature((["logo","text","both","off"] as Signature[])[Math.floor(Math.random()*4)]);
+
     const s=shuffle(SLOTS);
     setSlots({object:s[0],birthday:s[1],word:s[2],day:s[3]});
     setPreviewSeed(Math.floor(Math.random()*1000000));
@@ -295,7 +306,7 @@ export default function Home(){
               </div>
               <div className="homeIndicator"/>
             </>}
-            {objectMode!=="off"&&<DragHandle name="OBJECT" slot={slots.object} active={dragging==="object"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("object")}}/>}
+            {objectMode!=="off"&&<DragHandle name="OBJECT" slot={slots.object} active={dragging==="object"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("object")}}/>
             {birthdayEnabled&&<DragHandle name="BIRTHDAY" slot={slots.birthday} active={dragging==="birthday"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("birthday")}}/>}
             {motivation&&<DragHandle name="WORD" slot={slots.word} active={dragging==="word"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("word")}}/>}
             {dayEnabled&&<DragHandle name="DAY" slot={slots.day} active={dragging==="day"} onDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);setDragging("day")}}/>}

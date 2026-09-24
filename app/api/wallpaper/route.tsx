@@ -184,13 +184,13 @@ export async function GET(request:Request){
     if(!p)return null;
     return <div style={{
       display:"flex",position:"absolute",left:p.left,top:p.top,width:p.width,height:p.height,
-      padding:Math.round(16*scale),flexDirection:"column",justifyContent:"center",alignItems:"center",
+      padding:Math.round(20*scale),flexDirection:"column",justifyContent:"center",alignItems:"center",
       overflow:"hidden"
     }}>
       <BlockFrame style={frameStyle} fg={fg} border={border}/>
       {details&&label&&<div style={{
         display:"flex",position:"absolute",left:Math.round(12*scale),top:Math.round(10*scale),
-        fontSize:Math.round(7*scale),letterSpacing:"0.14em",opacity:.42
+        fontSize:Math.round(10*scale),letterSpacing:"0.14em",opacity:.42
       }}>{label}</div>}
       {children}
     </div>
@@ -214,7 +214,7 @@ export async function GET(request:Request){
           <div style={{display:"flex",fontSize:Math.round(50*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.055em"}}>
             {daysUntilBirthday(parts.year,parts.month,parts.day,birthday)}
           </div>
-          <div style={{display:"flex",fontSize:Math.round(10*scale),letterSpacing:"0.12em",marginTop:Math.round(10*scale),textAlign:"center"}}>
+          <div style={{display:"flex",fontSize:Math.round(12*scale),letterSpacing:"0.11em",marginTop:Math.round(16*scale),textAlign:"center"}}>
             {lang==="ru"?"ДНЕЙ ДО ДНЯ РОЖДЕНИЯ":"DAYS UNTIL BIRTHDAY"}
           </div>
         </>,
@@ -233,7 +233,7 @@ export async function GET(request:Request){
           <div style={{display:"flex",fontSize:Math.round(46*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.05em"}}>
             {String(doy).padStart(3,"0")}
           </div>
-          <div style={{display:"flex",fontSize:Math.round(10*scale),letterSpacing:"0.14em",marginTop:Math.round(10*scale)}}>
+          <div style={{display:"flex",fontSize:Math.round(12*scale),letterSpacing:"0.12em",marginTop:Math.round(16*scale)}}>
             {lang==="ru"?"ДЕНЬ ГОДА":"DAY OF YEAR"}
           </div>
         </>,
@@ -247,19 +247,19 @@ export async function GET(request:Request){
       }}>
         <BlockFrame style={frameStyle} fg={fg} border={border}/>
         {details&&<div style={{
-          display:"flex",position:"absolute",left:Math.round(12*scale),top:Math.round(10*scale),
-          fontSize:Math.round(7*scale),letterSpacing:"0.14em",opacity:.42
+          display:"flex",position:"absolute",left:Math.round(12*scale),top:Math.round(14*scale),
+          fontSize:Math.round(10*scale),letterSpacing:"0.14em",opacity:.42
         }}>{lang==="ru"?"// ПРОГРЕСС_ГОДА":"// YEAR_PROGRESS"}</div>}
         <div style={{display:"flex",fontSize:Math.round(54*scale),lineHeight:.85,fontWeight:700,letterSpacing:"-0.055em"}}>
           {displayYear}
         </div>
-        <div style={{display:"flex",width:"80%",height:Math.max(4,Math.round(5*scale)),border:`${border}px solid ${fg}`,marginTop:Math.round(18*scale)}}>
+        <div style={{display:"flex",width:"80%",height:Math.max(4,Math.round(5*scale)),border:`${border}px solid ${fg}`,marginTop:Math.round(24*scale)}}>
           <div style={{display:"flex",width:`${progress}%`,height:"100%",background:fg}}/>
         </div>
       </div>}
 
       {(signature==="logo"||signature==="both")&&<div style={{
-        display:"flex",position:"absolute",right:Math.round(device.width*.065),bottom:Math.round(device.height*.10),
+        display:"flex",position:"absolute",left:"50%",bottom:Math.round(device.height*.10),transform:"translateX(-50%)",
         width:Math.round(34*scale),height:Math.round(34*scale),opacity:.62
       }}>
         <svg viewBox="0 0 1536 1527" width={Math.round(34*scale)} height={Math.round(34*scale)}>
@@ -271,7 +271,7 @@ export async function GET(request:Request){
       </div>}
 
       {(signature==="text"||signature==="both")&&<div style={{
-        display:"flex",position:"absolute",right:Math.round(device.width*.065),bottom:Math.round(device.height*.082),
+        display:"flex",position:"absolute",left:"50%",bottom:Math.round(device.height*.078),transform:"translateX(-50%)",
         fontSize:Math.round(8*scale),letterSpacing:"0.18em",opacity:.48
       }}>ARISTERRI</div>}
     </div>,
